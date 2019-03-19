@@ -136,15 +136,15 @@ def genetic_cross (one, two):
 	two_first, two_last = two [:index], two [index:]
 	return one_first + two_last, two_first + one_last
 
-# class CSP_Node: 
-# 	@init
-# 	def __init__ (self, name, constraint = lambda a, b, c: True, domains = None): self.neighbors = []
-# 	def __eq__ (self, other): return self.name == other.name
-# 	def __repr__ (self): return f"Node ({self.name})"
-# 	def set_neighbors (self, *nodes): 
-# 		self.neighbors.extend (nodes)
-# 		for node in nodes: 
-# 			if self not in node.neighbors: node.set_neighbors(self)
+class CSP_Node: 
+	@init
+	def __init__ (self, name, constraint = lambda a, b, c: True, domains = None): self.neighbors = []
+	def __eq__ (self, other): return self.name == other.name
+	def __repr__ (self): return f"Node ({self.name})"
+	def set_neighbors (self, *nodes): 
+		self.neighbors.extend (nodes)
+		for node in nodes: 
+			if self not in node.neighbors: node.set_neighbors(self)
 
 class CSP: 
 	@init
@@ -267,19 +267,20 @@ def minimax (starter_state, override = infinity):
 
 class Node:
 	@init
-	def __init__(self, id, test, domain = None): 
+	def __init__(self, id, domain = None): 
 		self.neighbors = []
 		self.arcs = 0
 	def __eq__(self, other): type (other) is Node and other.id == self.id
 	def __repr__(self): return f"Node ({self.id})"
-	def set_neighbors(self, *nodes): 
+	def before(self, *nodes): 
 		for node in nodes: 
 			self.neighbors.append (node)
-			self.arcs += 1
+			node.arcs += 1
 
-class CSP:
+class OrderedCSP:
 	@init
 	def __init__ (self, nodes, domain = None): 
+		self.result = []
 		if domain is not None: 
 			domain = list (domain)
 			for node in nodes:
@@ -292,12 +293,29 @@ class CSP:
 			if node in node2.neighbors
 		])
 
-	def get_node(self, num_arcs): 
-		result = min (self.nodes, key = lambda node: node.arcs)
-		if result.arcs > num_arcs: 
-			raise ValueError(
-				f"{result} has {result.arcs} arcs, expected {num_arcs} arcs."
-			)
-		else: return result
+	def detach (self, nodes): 
+		for node in nodes: 
+			for neighbor in node.neighbors: 
+				neighbor.arcs -= 1
 
-	
+
+	def get_nodes(self, num_arcs): 
+
+		arcs = {}
+		for node in self.nodes:
+			if node in self.result: continue
+			if node.arcs in arcs: 
+				arcs [node.arcs].append (node)
+			else: arcs [node.arcs] = [node]
+
+		if not arcs: return []
+
+		result = arcs [min (arcs)]
+		self.detach (result)
+		return result
+
+	def solve(self): 
+		for arc_count in range (len (self.nodes)): 
+			nodes = self.get_nodes (arc_count)
+			self.result.extend (nodes)
+		return self.result
