@@ -183,6 +183,25 @@ class Node:
 			node.arcs += 1
 
 class OrderedCSP:
+	
+	def get_node(nodes, id_): 
+		for node in nodes: 
+			if node.id == id_: return node
+		else: raise ValueError(f"Cannot find node {id_} in {nodes}")
+
+	def __new__(cls, names, constraints): 
+		if type (names) is int: nodes = [Node (n + 1) for n in range (names)]
+		else: nodes = [Node (name) for name in names]
+
+		for before, after in constraints: 
+			first_node = cls.get_node (nodes, before)
+			second_node = cls.get_node (nodes, after)
+			first_node.before (second_node)
+
+		csp = object.__new__(cls)
+		csp.__init__(nodes, range (len (nodes)))
+		return [node.id for node in csp.solve()]
+
 	@init
 	def __init__ (self, nodes, domain = None): 
 		self.result = []
@@ -202,7 +221,6 @@ class OrderedCSP:
 		for node in nodes: 
 			for neighbor in node.neighbors: 
 				neighbor.arcs -= 1
-
 
 	def get_nodes(self, num_arcs): 
 
