@@ -183,6 +183,18 @@ class Node:
 			node.arcs += 1
 
 class OrderedCSP:
+	"""
+	A topological sorter
+
+	Usage: 	OrderedCSP(names, constraints)
+	- names = int | list
+		- if int: names = list (range (names))
+		- if list: names = names
+	- constraints: a list of lists of the form (before, after)
+		- this is the basis of the sort. 
+		- In the result, all the "before"s will be before their "after"s
+
+	"""
 	
 	def get_node(nodes, id_): 
 		for node in nodes: 
