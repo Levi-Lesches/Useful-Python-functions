@@ -1,20 +1,19 @@
 from operator import mul as multiply
 from functools import reduce
-
+from itertools import product
 
 ALPHABET = list ("abcdefghijklmnopqrstuvwxyz")
 VOWELS = list ("aeiou")
 
 def average (*nums): return sum (nums) / len (nums)
-def sum_digits (num): return sum (map (int, str (num)))
+def product (List): return reduce (multiply, List)
+def consecutive (List): return List == list (
+	range (List [0], List [0] + len (List))
+)
 
 def evens_of_list (List): 
 	from my_stuff.nums import is_even
 	return list (filter (is_even, List))
-
-def product (List): return reduce (multiply, List)
-
-def consecutive (List): return List == list (range (List [0], List [0] + len (List)))
 
 def flatten (List):
 	temp = []
@@ -238,3 +237,27 @@ def split_list (List, n, fill = None):
 	from itertools import zip_longest
 	args = [iter(List)] * n
 	return list (zip_longest(fillvalue=fill, *args))
+
+
+def get_subsets(List: list, target, length: int = None): 
+	smallest: int = abs (min (List))
+	new_list: int = [num + smallest for num in List]
+	results: list = []
+	for instruction in product ( (1, 0), repeat = len (List)): 
+		copy = [
+			(index, num)
+			for index, (keep, num) in enumerate (
+				zip (instruction, new_list)
+			)
+			if keep
+		]
+		new_target = target + (smallest * len (copy))
+		result = 0
+		for index, num in copy: 
+			result += num
+			if result > new_target: break
+		else: 
+			if result == new_target: results.append (
+				[List [index] for index, num in copy]
+			)
+	return results

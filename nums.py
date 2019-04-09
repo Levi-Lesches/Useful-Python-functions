@@ -4,6 +4,7 @@ def factorial (num):
 	return product (range (1, num + 1))
 def nCr (n, r): return factorial (n) / factorial (r) * factorial (n - r)
 def distance (a, b): return abs (a - b)
+def sum_digits (num): return sum (map (int, str (num)))
 
 def is_prime (num): return not any (
 	not num % n 
