@@ -1,6 +1,5 @@
 from operator import mul as multiply
 from functools import reduce
-from itertools import product
 
 ALPHABET = list ("abcdefghijklmnopqrstuvwxyz")
 VOWELS = list ("aeiou")
@@ -240,6 +239,7 @@ def split_list (List, n, fill = None):
 
 
 def get_subsets(List: list, target, length: int = None): 
+	from itertools import product
 	smallest: int = abs (min (List))
 	new_list: int = [num + smallest for num in List]
 	results: list = []
